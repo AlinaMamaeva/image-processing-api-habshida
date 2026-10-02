@@ -161,3 +161,32 @@ export const convertImage = async (
     path: outputPath,
   };
 };
+export const createThumbnail = async (filename: string) => {
+  const uploadDir = process.env.UPLOAD_DIR || "uploads";
+
+  const inputPath = path.join(process.cwd(), uploadDir, filename);
+
+  const nameWithoutExtension = path.parse(filename).name;
+
+  const outputFilename = `thumbnail-${nameWithoutExtension}.webp`;
+
+  const outputPath = path.join(
+    process.cwd(),
+    "processed",
+    outputFilename,
+  );
+
+  await sharp(inputPath)
+    .resize(150, 150, {
+      fit: "cover",
+    })
+    .webp({ quality: defaultImageQuality })
+    .toFile(outputPath);
+
+  return {
+    filename: outputFilename,
+    path: outputPath,
+    width: 150,
+    height: 150,
+  };
+};

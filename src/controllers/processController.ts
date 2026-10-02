@@ -3,7 +3,8 @@ import {
   resizeImage,
   getImageMetadata,
   addWatermark,
-    convertImage,
+  convertImage,
+  createThumbnail,
 } from "../services/imageService";
 
 export const processImage = async (
@@ -95,8 +96,7 @@ export const convertImageFormat = async (
       });
     }
 
-    const qualityNumber =
-      quality === undefined ? 80 : Number(quality);
+    const qualityNumber = quality === undefined ? 80 : Number(quality);
 
     if (
       !Number.isFinite(qualityNumber) ||
@@ -108,11 +108,7 @@ export const convertImageFormat = async (
       });
     }
 
-    const result = await convertImage(
-      filename,
-      format,
-      qualityNumber,
-    );
+    const result = await convertImage(filename, format, qualityNumber);
 
     return res.status(200).json({
       message: "Image converted successfully",
@@ -121,6 +117,25 @@ export const convertImageFormat = async (
   } catch (error) {
     return res.status(500).json({
       message: "Image conversion failed",
+    });
+  }
+};
+export const thumbnailImage = async (
+  req: Request<{ filename: string }>,
+  res: Response,
+) => {
+  try {
+    const { filename } = req.params;
+
+    const result = await createThumbnail(filename);
+
+    return res.status(200).json({
+      message: "Thumbnail created successfully",
+      file: result,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: "Failed to create thumbnail",
     });
   }
 };
